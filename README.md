@@ -4,4 +4,7 @@
 
 **usage: tcm [-s YYYY-MM-DD] [-u YYYY-MM-DD]**
 
-Display number of lines add and deleted and total commits over a date range.
+Display number of lines add and deleted and total commits over a date range for the current git repo
+
+*download to /usr/local/bin*
+*chmod +ux
