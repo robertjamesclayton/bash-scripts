@@ -1,0 +1,45 @@
+#!/bin/bash
+
+since=`date +%Y-%m-01`
+until=`date +%Y-%m-%d`
+
+
+usage() {
+  echo "usage: tcm [-s YYYY-MM-DD] [-u YYYY-MM-DD]"
+  exit
+}
+
+while getopts "u:s:"  opt
+do
+  case $opt in
+    s)
+      since=$OPTARG
+      ;;
+    u)
+      until=$OPTARG
+      ;;
+    \?)
+      echo "invalid option"
+      usage
+      ;;
+  esac
+done
+
+echo "date range from $since to $until"
+
+allcommitters=$(git shortlog -sn | cut -f 2 | tr '\n' ',')
+
+IFS=, read -ra committers <<< "$allcommitters"
+
+#echo $committers
+printf "%-20s %-10s %-10s %-10s \n" "COMMITTER" "ADDED" "DELETED" "COMMITS"
+
+
+for p in "${committers[@]}"; do
+  lines=$(git log --committer="$p" --numstat --since="$since" --until="$until" | sed '/^ .*/d;/^[A-Z]/d;/^[a-z]/d;/^$/d' | tr "\\t" "," | awk -F',' '{inserts+=$1;deletes+=$2}END{printf "%s,%s", inserts , deletes}')
+  commits=$(git log --committer="$p" --since="$since" --until="$until" --pretty=oneline | echo -n `wc -l`)
+
+
+  IFS=, read -ra insertsanddeletes <<< "$lines"
+  printf "%-20s %-10s %-10s %-10s \n" "$p" "${insertsanddeletes[0]}" "${insertsanddeletes[1]}" "$commits"
+done
