@@ -6,7 +6,7 @@
 
 Display number of lines added and deleted and total commits over a date range for all committers to the current working directory git repo. Use with no arguments to get stats from the first day of the current month.
 
-*-t print details of the number of unit tests added by usernames instead of lines added deleted*
+*-t print details of the number of unit tests added by usernames instead of lines added deleted (may take a while to run)*
 
 *-s optional start date YYYY-MM-DD*
 
