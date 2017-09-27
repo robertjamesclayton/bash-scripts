@@ -10,7 +10,7 @@ usage() {
 }
 
 show_tests(){
-  printf "%-15s %-10s\n" "AUTHOR" "NO. UNIT TESTS"
+  printf "%-15s %-10s\n" "COMMITTER" "NO. UNIT TESTS"
   files=$(git grep -n -e '^\s*TEST' . | cut -d : -f 1,2 | awk -F':' '{printf "-L%s,%s %s\n", $2,$2,$1}')
 
   while read -r line; do
@@ -75,6 +75,7 @@ do
       ;;
     t)
       show_tests
+      exit
       ;;
     \?)
       echo "invalid option"
