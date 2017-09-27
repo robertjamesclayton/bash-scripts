@@ -5,11 +5,66 @@ until=`date +%Y-%m-%d`
 
 
 usage() {
-  echo "usage: tcm [-s YYYY-MM-DD] [-u YYYY-MM-DD]"
+  echo "usage: tcm [[-s YYYY-MM-DD] [-u YYYY-MM-DD]] | [-t]"
   exit
 }
 
-while getopts "u:s:"  opt
+show_tests(){
+  printf "%-15s %-10s\n" "AUTHOR" "NO. UNIT TESTS"
+  files=$(git grep -n -e '^\s*TEST' . | cut -d : -f 1,2 | awk -F':' '{printf "-L%s,%s %s\n", $2,$2,$1}')
+
+  while read -r line; do
+    blame=$(git blame -p $line | grep 'author ')
+    usernames+="${blame//author /} "
+  done <<< "$files"
+
+  sorted=$(for username in `echo $usernames`; do echo ${username}; done | sort | uniq -c)
+
+  sorted=$(echo $sorted | tr ' ' ',')
+
+  declare -i loopcount
+  loopcount=0
+  IFS=',' read -ra uniq_stats <<< "$sorted"
+  author=""
+  let test_count=0
+  for nameorcount in "${uniq_stats[@]}"; do
+      let isodd=$loopcount%2
+      if [ "$isodd" -eq "0" ]; then
+        test_count=$nameorcount
+      else
+        author=$nameorcount
+        printf "%-15s %-10s\n" "$author" "$test_count"
+      fi
+      loopcount+=1
+  done
+}
+
+lines_added_deleted(){
+  since=$1
+  until=$2
+
+  echo "date range from $since to $until"
+
+  allcommitters=$(git shortlog -sn | cut -f 2 | tr '\n' ',')
+
+  IFS=, read -ra committers <<< "$allcommitters"
+
+  #echo $committers
+  printf "%-20s %-10s %-10s %-10s \n" "COMMITTER" "ADDED" "DELETED" "COMMITS"
+
+
+  for p in "${committers[@]}"; do
+    lines=$(git log --committer="$p" --numstat --since="$since" --until="$until" | sed '/^ .*/d;/^[A-Z]/d;/^[a-z]/d;/^$/d' | tr "\\t" "," | awk -F',' '{inserts+=$1;deletes+=$2}END{printf "%s,%s", inserts , deletes}')
+    commits=$(git log --committer="$p" --since="$since" --until="$until" --pretty=oneline | echo -n `wc -l`)
+
+
+    IFS=, read -ra insertsanddeletes <<< "$lines"
+    printf "%-20s %-10s %-10s %-10s \n" "$p" "${insertsanddeletes[0]}" "${insertsanddeletes[1]}" "$commits"
+  done
+
+}
+
+while getopts "u:s:t"  opt
 do
   case $opt in
     s)
@@ -18,6 +73,9 @@ do
     u)
       until=$OPTARG
       ;;
+    t)
+      show_tests
+      ;;
     \?)
       echo "invalid option"
       usage
@@ -25,21 +83,4 @@ do
   esac
 done
 
-echo "date range from $since to $until"
-
-allcommitters=$(git shortlog -sn | cut -f 2 | tr '\n' ',')
-
-IFS=, read -ra committers <<< "$allcommitters"
-
-#echo $committers
-printf "%-20s %-10s %-10s %-10s \n" "COMMITTER" "ADDED" "DELETED" "COMMITS"
-
-
-for p in "${committers[@]}"; do
-  lines=$(git log --committer="$p" --numstat --since="$since" --until="$until" | sed '/^ .*/d;/^[A-Z]/d;/^[a-z]/d;/^$/d' | tr "\\t" "," | awk -F',' '{inserts+=$1;deletes+=$2}END{printf "%s,%s", inserts , deletes}')
-  commits=$(git log --committer="$p" --since="$since" --until="$until" --pretty=oneline | echo -n `wc -l`)
-
-
-  IFS=, read -ra insertsanddeletes <<< "$lines"
-  printf "%-20s %-10s %-10s %-10s \n" "$p" "${insertsanddeletes[0]}" "${insertsanddeletes[1]}" "$commits"
-done
+lines_added_deleted $since $until
