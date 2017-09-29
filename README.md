@@ -33,6 +33,10 @@ ataylor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&
 
 # ccrev
 
-**usage: ccrev -t <title> -r <reviewer> -o <observer>**
+**usage: ccrev -t title -r reviewer -o observer**
 
-Adds and starts a Code Collab review using the last git commit (HEAD^) as the source of git diff.
+Adds and starts a Code Collab review using the last git commit (HEAD^) as the source of git diff. The reviewer and observer must be valid Code Collab user names.
+
+**Example**
+
+ccrev -t "Added unit tests to new fancy service" -r pwilson -o tdavis
