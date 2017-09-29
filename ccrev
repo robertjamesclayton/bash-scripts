@@ -8,7 +8,7 @@ usage() {
 
 
 
-while getopts "t:r:o:"  opt
+while getopts "t:r:o:i:c"  opt
 do
   case $opt in
     t)
@@ -20,6 +20,13 @@ do
     o)
       observer=$OPTARG
       ;;
+    i)
+      issue=$OPTARG
+      ;;
+
+    c)
+      commit="yes"
+      ;;
     \?)
       echo "invalid option"
       usage
@@ -27,8 +34,23 @@ do
   esac
 done
 
+# if issue is not defined use the title
+if [[ $issue = *[!\ ]* ]]; then
+  #get the issue text
+    actualTitle="$issue: $(jira show -o summary $issue)"
+else
+  actualTitle=$title
+fi
+
+if [ -z $commit ]; then
+  echo "no commit";
+else
+  git commit . -m"\"Fixed $actualTitle\"";
+fi
+
+
 transaction_no=$(ccollab --no-browser addgitdiffs new HEAD^| awk 'match($0,/[0-9]+\.$/){print substr($0,RSTART,RLENGTH-1)}')
-ccollab admin review edit --title "\"$title\"" $transaction_no
+ccollab admin review edit --title "\"$actualTitle\"" $transaction_no
 ccollab admin review participant assign $transaction_no "\"$reviewer\"" 'Reviewer'
 ccollab admin review participant assign $transaction_no "\"$observer\"" 'Observer'
 ccollab admin review finish $transaction_no
