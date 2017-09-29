@@ -33,9 +33,13 @@ ataylor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&
 
 # ccrev
 
-**usage: ccrev -t title -r reviewer -o observer**
+**usage: ccrev -t title -r reviewer -o observer -c**
 
 Adds and starts a Code Collab review using the last git commit (HEAD^) as the source of git diff. The reviewer and observer must be valid Code Collab user names.
+
+#### Installation
+
+Install node, easiest way is via installer https://nodejs.org/en/download/ . You will also need the jira command line utilities: npm install -g jira-cmd
 
 **Example**
 
