@@ -1,0 +1,34 @@
+#!/bin/bash
+comment="My new review"
+
+
+usage() {
+  echo "acc usage"
+}
+
+
+
+while getopts "t:r:o:"  opt
+do
+  case $opt in
+    t)
+      title=$OPTARG
+      ;;
+    r)
+      reviewer=$OPTARG
+      ;;
+    o)
+      observer=$OPTARG
+      ;;
+    \?)
+      echo "invalid option"
+      usage
+      ;;
+  esac
+done
+
+transaction_no=$(ccollab --no-browser addgitdiffs new HEAD^| awk 'match($0,/[0-9]+\.$/){print substr($0,RSTART,RLENGTH-1)}')
+ccollab admin review edit --title "\"$title\"" $transaction_no
+ccollab admin review participant assign $transaction_no "\"$reviewer\"" 'Reviewer'
+ccollab admin review participant assign $transaction_no "\"$observer\"" 'Observer'
+ccollab admin review finish $transaction_no
