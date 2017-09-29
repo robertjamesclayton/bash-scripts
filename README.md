@@ -30,3 +30,9 @@ phansen&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&
 ataylor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;43<br/>
 
 *download tcm script to /usr/local/bin then 'chmod +ux /usr/local/bin/tcm'*
+
+# ccrev
+
+**usage: ccrev -t <title> -r <reviewer> -o <observer>**
+
+Adds and starts a Code Collab review using the last git commit (HEAD^) as the source of git diff.
