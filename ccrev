@@ -1,12 +1,50 @@
 #!/bin/bash
+
+#todo
 comment="My new review"
 
 
 usage() {
-  echo "acc usage"
+  echo "ccrev [-c -r <reviewer> -o <observer> [-t title | -i <jira-issue>]]"
 }
 
+get_title() {
+  local issueNo=$1
+  local title=$2
+  # if issue is not defined use the title
+  if [[ $issueNo = *[!\ ]* ]]; then
+    #get the issue text
+      title="$(jira show -o summary $issueNo)"
+  fi
+  echo $title
+}
+get_commit_messages(){
+  local issueNo=$1
+  local summary=$2
+  local reviewerName=$3
 
+  echo "-m\"Fixed $issueNo:$summary\" -m\"Reviewed By:$reviewerName\" -m\"Jira Issue URL: https://avid-ondemand.atlassian.net/browse/$issueNo\""
+}
+
+do_commit(){
+   git commit . $1;
+}
+
+try_commit() {
+
+  local docommit=$1
+  local issueNo=$2
+  local summary=$3
+  local reviewerName=$4
+
+  if [ -z $docommit ]; then
+    echo "no commit";
+  else
+    local commitMessages=$(get_commit_messages $issueNo "$summary" $reviewerName)
+    do_commit "$commitMessages"
+  fi
+
+}
 
 
 while getopts "t:r:o:i:c"  opt
@@ -35,19 +73,8 @@ do
   esac
 done
 
-# if issue is not defined use the title
-if [[ $issue = *[!\ ]* ]]; then
-  #get the issue text
-    actualTitle="$issue: $(jira show -o summary $issue)"
-else
-  actualTitle=$title
-fi
-
-if [ -z $commit ]; then
-  echo "no commit";
-else
-  git commit . -m"\"Fixed $actualTitle\"";
-fi
+actualTitle=$(get_title $issue "$title")
+try_commit $commit $issue "$actualTitle" $reviewer
 
 
 transaction_no=$(ccollab --no-browser addgitdiffs new HEAD^| awk 'match($0,/[0-9]+\.$/){print substr($0,RSTART,RLENGTH-1)}')
