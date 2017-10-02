@@ -27,7 +27,8 @@ get_commit_messages(){
 }
 
 do_commit(){
-   git commit . $1;
+  echo $1
+  git commit . "$1";
 }
 
 try_commit() {
@@ -37,11 +38,11 @@ try_commit() {
   local summary=$3
   local reviewerName=$4
 
-  if [ -z $docommit ]; then
-    echo "no commit";
-  else
+  if [ "$docommit" == "yes" ]; then
     local commitMessages=$(get_commit_messages $issueNo "$summary" $reviewerName)
     do_commit "$commitMessages"
+  else
+    echo "using last commit";
   fi
 
 }
