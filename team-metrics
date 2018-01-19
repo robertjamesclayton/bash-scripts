@@ -1,0 +1,13 @@
+#!/bin/bash
+echo "date range from $1 to $2"
+
+filename="/Users/$USER/.team-metrics/config"
+exec 4<$filename
+while read -u4 p; do
+  echo -n "$p "
+  git log --committer="$p" --numstat --since="$1" --until="$2" | sed '/^ .*/d;/^[A-Z]/d;/^[a-z]/d;/^$/d' | tr "\\t" "," | awk -F',' '{inserts+=$1;deletes+=$2}END{printf "inserted " inserts " lines and deleted " deletes}'
+  echo -n " via "
+  git log --committer="$p" --since="$1" --until="$2" --pretty=oneline | echo -n `wc -l`
+  echo " commits"
+done
+git shortlog -sn
