@@ -74,20 +74,24 @@ if [ "$issue" ]; then
     issueText="$(jira show -o summary $issue)"
     if [ "$title" ]; then
       title="$issueText - ""$title"
+    else
+      title="$issueText"
     fi
 fi
 
 if [ "$commit" ]; then
 
     if [ "$issue" ]; then
-      commitMessages="-m\"Fixed $issue:$title\" -m\"Reviewed By:$reviewer\" -m\"Jira Issue URL: https://avid-ondemand.atlassian.net/browse/$issue\""
+      commitMessages=$" -m \"Fixed $issue:$title\" -m \"Reviewed By:$reviewer\" -m \"Jira Issue URL: https://avid-ondemand.atlassian.net/browse/$issue\""
     else
       commitMessages="-m\"$title\" -m\"reviewed by:$reviewer\""
     fi
-  do_commit "$commitMessages"
+  git commit . "$commitMessages"
+  echo "$commitMessages"
 else
   echo "using last commit";
 fi
+
 transaction_no=$(ccollab --no-browser addgitdiffs new HEAD^| awk 'match($0,/[0-9]+\.$/){print substr($0,RSTART,RLENGTH-1)}')
 ccollab admin review edit --title "\"$title\"" $transaction_no
 ccollab admin review participant assign $transaction_no "\"$reviewer\"" 'Reviewer'
