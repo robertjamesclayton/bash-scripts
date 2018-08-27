@@ -1,0 +1,25 @@
+#!/bin/bash
+
+
+while getopts "c:"  opt
+do
+  case $opt in
+    c)
+      config=$OPTARG
+      ;;
+    \?)
+      echo "invalid option"
+      echo "pt-log-tail -c [debug|release]"
+      ;;
+  esac
+done
+
+# if issue is not defined use the title
+if [ "$config" == "release" ]; then
+  config='Release';
+else
+  config='Debug';
+fi
+
+
+ls -Artd -1 $PT_BASH_TOOLS_ROOT/MacBag/$config/Logs/* | tail -n1 | xargs tail -f

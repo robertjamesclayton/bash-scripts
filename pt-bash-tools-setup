@@ -1,0 +1,3 @@
+#!/bin/bash
+
+export PT_BASH_TOOLS_ROOT=$PWD;
