@@ -1,0 +1,25 @@
+#!/bin/bash
+
+
+while getopts "c:"  opt
+do
+  case $opt in
+    c)
+      config=$OPTARG
+      ;;
+    \?)
+      echo "invalid option"
+      echo "pt-log-tail -c [debug|release]"
+      ;;
+  esac
+done
+
+# if issue is not defined use the title
+if [ "$config" == "debug" ]; then
+  config='Debug';
+else
+  config='Release';
+fi
+
+
+$PT_BASH_TOOLS_ROOT/MacBag/$config/Pro\ Tools.app/Contents/MacOS/Pro\ Tools

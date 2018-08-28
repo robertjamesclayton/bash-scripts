@@ -1,0 +1,11 @@
+#!/bin/bash
+
+cp pt-bash-tools-setup /usr/local/bin/.
+cp pt-run /usr/local/bin/.
+cp pt-log-tail /usr/local/bin/.
+cp pt-digi-trace /usr/local/bin/.
+
+chmod +x /usr/local/bin/pt-digi-trace
+chmod +x /usr/local/bin/pt-log-tail
+chmod +x /usr/local/bin/pt-bash-tools-setup
+chmod +x /usr/local/bin/pt-run

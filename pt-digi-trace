@@ -1,0 +1,3 @@
+#!/bin/bash
+rm -rf $PT_BASH_TOOLS_ROOT/MacBag/Release/Digitrace.framework
+cp -Rf $PT_BASH_TOOLS_ROOT/MacBag/Debug/Digitrace.framework $PT_BASH_TOOLS_ROOT/MacBag/Release/.
